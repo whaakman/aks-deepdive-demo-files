@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deploymentname }}
+  labels:
+    app: {{ .Values.deploymentname }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.deploymentname }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.deploymentname }}
+    spec:
+      containers:
+      - image: {{ .Values.imagelocation }}
+        name: {{ .Values.imagename }}
+        ports:
+        - containerPort: {{ .Values.port }}
+          protocol: {{ .Values.protocol }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.deploymentname }}
+spec:
+  selector:
+    app: {{ .Values.deploymentname }}
+  ports:
+  - protocol: {{ .Values.protocol }}
+    port: {{ .Values.port }}
+    targetPort: {{ .Values.port }}
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.deploymentname }}
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  tls:
+    {{- range .Values.ingress.hosts }}
+    - hosts: 
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+        {{- end }}    
+      secretName: {{ .Values.secretName }} 
+  rules:
+    {{- range .Values.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ $.Values.deploymentname}}
+              port:
+                number: {{ $.Values.port }}
+    {{- end }}

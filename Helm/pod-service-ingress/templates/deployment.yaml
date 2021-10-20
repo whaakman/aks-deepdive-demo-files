@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deploymentname }}
+  labels:
+    app: {{ .Values.deploymentname }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.deploymentname }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.deploymentname }}
+    spec:
+      containers:
+      - image: "mcr.microsoft.com/dotnet/core/samples:aspnetapp"
+        name: {{ .Values.imagename }}
+                  
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.deploymentname }}
+spec:
+  selector:
+    app: {{ .Values.deploymentname }}
+  ports:
+  - protocol: {{ .Values.protocol }}
+    port: 80
+    targetPort: 80
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.deploymentname }}
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  tls:
+    - hosts: 
+      - {{ .Values.hostName }}
+      secretName: {{ .Values.secretName }}
+  rules:
+  - host: {{ .Values.hostName }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Values.deploymentname }}
+            port:
+              number: 80

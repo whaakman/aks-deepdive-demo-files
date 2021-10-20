@@ -1,0 +1,31 @@
+# Default values for demo1.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+deploymentname: "aspnetapphelmloop"
+
+imagename: aspnetapp-image
+
+secretName: "aks-ingress-tls"
+
+imagelocation: "mcr.microsoft.com/dotnet/core/samples:aspnetapp"
+
+protocol: "TCP"
+port: 80
+
+ingress:
+  hosts:
+    - host: helmloop1.cloudadventures.org
+    - host: helmloop2.cloudadventures.org
+    - host: helmloop3.cloudadventures.org
+    - host: helmloop4.cloudadventures.org
+    - host: helmloop5.cloudadventures.org
+    - host: helmloop6.cloudadventures.org
+    - host: helmloop7.cloudadventures.org
+    - host: helmloop8.cloudadventures.org
+    - host: helmloop9.cloudadventures.org
+    - host: helmloop10.cloudadventures.org
+    - host: helmloop11.cloudadventures.org
+    - host: helmloop12.cloudadventures.org
+    - host: helmloop13.cloudadventures.org
+    - host: helmloop14.cloudadventures.org

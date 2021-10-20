@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aspnetapp
+  labels:
+    app: aspnetapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: aspnetapp
+  template:
+    metadata:
+      labels:
+        app: aspnetapp
+    spec:
+      containers:
+      - image: "mcr.microsoft.com/dotnet/core/samples:aspnetapp"
+        name: aspnetapp-image
+    
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: aspnetapp
+spec:
+  selector:
+    app: aspnetapp  
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: aspnetapp
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  tls:
+    - hosts: 
+      - aksdemo1.cloudadventures.org
+      - aksdemo2.cloudadventures.org
+      - aksdemo3.cloudadventures.org
+      secretName: aks-ingress-tls
+  rules:
+    - host: aksdemo1.cloudadventures.org
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: aspnetapp
+              port: 
+                number: 80
+    - host: aksdemo2.cloudadventures.org
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: aspnetapp
+              port: 
+                number: 80
+    - host: aksdemo3.cloudadventures.org
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: aspnetapp
+              port: 
+                number: 80        
